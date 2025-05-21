@@ -24,16 +24,19 @@ namespace PieMavenPlugin
 
         private void generateButton_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(pomDirectoryTextBox.Text.Trim()) || string.IsNullOrEmpty(phasesTextBox.Text.Trim())) {
+            if (string.IsNullOrEmpty(pomDirectoryTextBox.Text.Trim()) || string.IsNullOrEmpty(phasesTextBox.Text.Trim()))
+            {
                 MessageBox.Show("Input fields cannot be empty.", "Pie Maven Plugin");
             }
+            else
+            {
+                RunTerminalCommandAction runTerminalCommandAction = new RunTerminalCommandAction();
+                runTerminalCommandAction.Command = "mvn -f \"" + pomDirectoryTextBox.Text + "\" " + phasesTextBox.Text;
 
-            RunTerminalCommandAction runTerminalCommandAction = new RunTerminalCommandAction();
-            runTerminalCommandAction.Command = "mvn -f \"" + pomDirectoryTextBox.Text + "\" " + phasesTextBox.Text;
+                actions.Add(runTerminalCommandAction);
 
-            actions.Add(runTerminalCommandAction);
-
-            this.Close();
+                this.Close();
+            }
         }
     }
 }
