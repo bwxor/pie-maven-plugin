@@ -1,6 +1,6 @@
 ﻿namespace SampleWinformsPlugin
 {
-    partial class Form1
+    partial class NewMavenProjectForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewMavenProjectForm));
             parentDirectoryTextBox = new TextBox();
             browseButton = new Button();
             label1 = new Label();
@@ -153,6 +153,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "New Maven Project";
             ResumeLayout(false);
             PerformLayout();

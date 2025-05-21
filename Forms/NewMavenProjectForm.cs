@@ -1,32 +1,16 @@
+using PieMavenPlugin.Classes;
 using plugin.Classes;
 
 namespace SampleWinformsPlugin
 {
-    public partial class Form1 : Form, IPlugin
+    public partial class NewMavenProjectForm : Form
     {
-        private List<PluginAction> actions = new List<PluginAction>();
+        public PluginTaskInput pluginTaskInput;
+        public List<PluginAction> actions = new List<PluginAction>();
 
-        public Form1()
+        public NewMavenProjectForm()
         {
             InitializeComponent();
-        }
-
-        public Dictionary<PluginTask, Func<PluginTaskInput, PluginTaskOutput>> GetTaskDictionary()
-        {
-            return new Dictionary<PluginTask, Func<PluginTaskInput, PluginTaskOutput>>
-            {
-                { new PluginTask("New Maven Project"), NewMavenProject }
-            };
-        }
-
-        public PluginTaskOutput NewMavenProject(PluginTaskInput input)
-        {
-            PluginTaskOutput pluginTaskOutput = new PluginTaskOutput();
-            pluginTaskOutput.Actions = actions;
-
-            this.ShowDialog();
-
-            return pluginTaskOutput;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -41,37 +25,36 @@ namespace SampleWinformsPlugin
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(parentDirectoryTextBox.Text.Trim()) 
+            if (string.IsNullOrEmpty(parentDirectoryTextBox.Text.Trim())
                 || string.IsNullOrEmpty(groupIdTextBox.Text.Trim())
                 || string.IsNullOrEmpty(artifactIdTextBox.Text.Trim())
                 || string.IsNullOrEmpty(versionTextBox.Text.Trim()))
             {
                 MessageBox.Show("Input fields cannot be empty.");
             }
-
-            if (groupIdTextBox.Text.Any(x => !Char.IsNumber(x) && !Char.IsLetter(x) && x != '.'))
+            else if (groupIdTextBox.Text.Any(x => !Char.IsNumber(x) && !Char.IsLetter(x) && x != '.'))
             {
-                MessageBox.Show("Group Id can only contain letters, numbers and dots.");
+                MessageBox.Show("Group Id can only contain letters, numbers and dots.", "Pie Maven Plugin");
             }
             else if (groupIdTextBox.Text.StartsWith(".") || groupIdTextBox.Text.EndsWith("."))
             {
-                MessageBox.Show("Group Id cannot start or end with a dot.");
+                MessageBox.Show("Group Id cannot start or end with a dot.", "Pie Maven Plugin");
             }
-            else if (artifactIdTextBox.Text.Any(x => !Char.IsNumber(x) && x != '-'))
+            else if (artifactIdTextBox.Text.Any(x => !Char.IsLetter(x) && !Char.IsNumber(x) && x != '-'))
             {
-                MessageBox.Show("Artifact Id can only contain letters, numbers and dashes.");
+                MessageBox.Show("Artifact Id can only contain letters, numbers and dashes.", "Pie Maven Plugin");
             }
             else if (artifactIdTextBox.Text.StartsWith('-') || artifactIdTextBox.Text.EndsWith('-'))
             {
-                MessageBox.Show("Artifact Id cannot start or end with a dash.");
+                MessageBox.Show("Artifact Id cannot start or end with a dash.", "Pie Maven Plugin");
             }
-            else if (versionTextBox.Text.Any(x => !Char.IsNumber(x) && !Char.IsLetter(x) && x != '.' && x != '+'))
+            else if (versionTextBox.Text.Any(x => !Char.IsNumber(x) && !Char.IsLetter(x) && x != '.' && x != '+' && x != '-'))
             {
-                MessageBox.Show("Version can only contain letters, numbers, dots and plus symbols.");
+                MessageBox.Show("Version can only contain letters, numbers, dots, dashes and plus symbols.", "Pie Maven Plugin");
             }
-            else if (versionTextBox.Text.StartsWith('.') || versionTextBox.Text.EndsWith('.') || versionTextBox.Text.StartsWith('+') || versionTextBox.Text.EndsWith('+'))
+            else if (versionTextBox.Text.StartsWith('.') || versionTextBox.Text.EndsWith('.') || versionTextBox.Text.StartsWith('+') || versionTextBox.Text.EndsWith('+') || versionTextBox.Text.StartsWith('-') || versionTextBox.Text.EndsWith('-'))
             {
-                MessageBox.Show("Version cannot start or end with a dot or a plus.");
+                MessageBox.Show("Version cannot start or end with a dot, dash or plus.", "Pie Maven Plugin");
             }
             else
             {
@@ -94,8 +77,8 @@ namespace SampleWinformsPlugin
             CreateDirectoryFromParent(artifactId + "\\src\\test\\resources");
 
             BuildJavaMainClassFromParent();
-
             CreatePomFileFromParent();
+            SelectProjectDirectoryFromParent();
         }
 
         private void CreateDirectoryFromParent(string name)
@@ -109,21 +92,22 @@ namespace SampleWinformsPlugin
         {
             string[] groupIdSplitByDot = groupIdTextBox.Text.Split('.');
 
-            string javaPackagePath = "src\\main\\java";
+            string javaPackagePath = artifactIdTextBox.Text + "\\src\\main\\java";
 
-            for (int i = 0; i < javaPackagePath.Length; i++)
+            for (int i = 0; i < groupIdSplitByDot.Length; i++)
             {
-                javaPackagePath += "\\" + javaPackagePath[i];
+                javaPackagePath += "\\" + groupIdSplitByDot[i];
 
                 CreateDirectoryFromParent(javaPackagePath);
             }
 
             CreateFileFromParent(javaPackagePath + "\\Main.java", FileContents.JAVA_MAIN_CLASS_CONTENT);
+            OpenTabFromParent(javaPackagePath + "\\Main.java");
         }
 
         private void CreatePomFileFromParent()
         {
-            CreateFileFromParent(artifactIdTextBox + "\\pom.xml", FileContents.POM_CONTENT.Replace("REPLACE_GROUP_ID", groupIdTextBox.Text).Replace("REPLACE_ARTIFACT_ID", artifactIdTextBox.Text).Replace("REPLACE_VERSION", versionTextBox.Text));
+            CreateFileFromParent(artifactIdTextBox.Text + "\\pom.xml", FileContents.POM_CONTENT.Replace("REPLACE_GROUP_ID", groupIdTextBox.Text).Replace("REPLACE_ARTIFACT_ID", artifactIdTextBox.Text).Replace("REPLACE_VERSION", versionTextBox.Text));
         }
 
         private void CreateFileFromParent(string name, string content)
@@ -132,6 +116,20 @@ namespace SampleWinformsPlugin
             createFileAction.Path = parentDirectoryTextBox.Text + "\\" + name;
             createFileAction.Content = content;
             actions.Add(createFileAction);
+        }
+
+        private void OpenTabFromParent(string path)
+        {
+            OpenTabAction openTabAction = new OpenTabAction();
+            openTabAction.Path = parentDirectoryTextBox.Text + "\\" + path;
+            actions.Add(openTabAction);
+        }
+
+        private void SelectProjectDirectoryFromParent()
+        {
+            SelectDirectoryAction selectDirectoryAction = new SelectDirectoryAction();
+            selectDirectoryAction.Path = parentDirectoryTextBox.Text + "\\" + artifactIdTextBox.Text;
+            actions.Add(selectDirectoryAction);
         }
     }
 }
