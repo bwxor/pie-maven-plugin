@@ -109,6 +109,7 @@
             Name = "BuildMavenProjectForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Maven Build";
+            Load += BuildMavenProjectForm_Load;
             ResumeLayout(false);
             PerformLayout();
         }

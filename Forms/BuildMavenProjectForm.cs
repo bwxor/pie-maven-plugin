@@ -32,10 +32,25 @@ namespace PieMavenPlugin
             {
                 RunTerminalCommandAction runTerminalCommandAction = new RunTerminalCommandAction();
                 runTerminalCommandAction.Command = "mvn -f \"" + pomDirectoryTextBox.Text + "\" " + phasesTextBox.Text;
-
                 actions.Add(runTerminalCommandAction);
 
+                pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomDirectoryTextBox.Text;
+                pluginTaskInput.Context.Map["PieMavenPlugin:phases"] = phasesTextBox.Text;
+
                 this.Close();
+            }
+        }
+
+        private void BuildMavenProjectForm_Load(object sender, EventArgs e)
+        {
+            if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:pomDirectory"))
+            {
+                pomDirectoryTextBox.Text = (string)pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"];
+            }
+
+            if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:phases"))
+            {
+                phasesTextBox.Text = (string)pluginTaskInput.Context.Map["PieMavenPlugin:phases"];
             }
         }
     }
