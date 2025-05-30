@@ -79,6 +79,8 @@ namespace SampleWinformsPlugin
             BuildJavaMainClassFromParent();
             CreatePomFileFromParent();
             SelectProjectDirectoryFromParent();
+
+            pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = parentDirectoryTextBox.Text + "\\" + artifactId + "\\pom.xml";
         }
 
         private void CreateDirectoryFromParent(string name)
@@ -101,7 +103,7 @@ namespace SampleWinformsPlugin
                 CreateDirectoryFromParent(javaPackagePath);
             }
 
-            CreateFileFromParent(javaPackagePath + "\\Main.java", FileContents.JAVA_MAIN_CLASS_CONTENT);
+            CreateFileFromParent(javaPackagePath + "\\Main.java", "package " + groupIdTextBox.Text + ";\n\n" + FileContents.JAVA_MAIN_CLASS_CONTENT);
             OpenTabFromParent(javaPackagePath + "\\Main.java");
         }
 

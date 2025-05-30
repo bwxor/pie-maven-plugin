@@ -133,7 +133,7 @@
             label4.TabIndex = 8;
             label4.Text = "Version:";
             // 
-            // Form1
+            // NewMavenProjectForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -152,7 +152,7 @@
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
-            Name = "Form1";
+            Name = "NewMavenProjectForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "New Maven Project";
             ResumeLayout(false);

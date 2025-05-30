@@ -14,28 +14,37 @@ namespace PieMavenPlugin
 
         private void browseButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Maven Project Files (*.xml)|*.xml|All Files (*.*)|*.*",
+                Title = "Select a Maven Project File"
+            };
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                pomDirectoryTextBox.Text = openFileDialog.FileName;
+                pomLocationTextBox.Text = openFileDialog.FileName;
             }
         }
 
         private void generateButton_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(pomDirectoryTextBox.Text.Trim()) || string.IsNullOrEmpty(phasesTextBox.Text.Trim()))
+            if (string.IsNullOrEmpty(pomLocationTextBox.Text.Trim()) || string.IsNullOrEmpty(phasesTextBox.Text.Trim()))
             {
                 MessageBox.Show("Input fields cannot be empty.", "Pie Maven Plugin");
             }
             else
             {
                 RunTerminalCommandAction runTerminalCommandAction = new RunTerminalCommandAction();
-                runTerminalCommandAction.Command = "mvn -f \"" + pomDirectoryTextBox.Text + "\" " + phasesTextBox.Text;
+                runTerminalCommandAction.Command = "mvn -f \"" + pomLocationTextBox.Text + "\" " + phasesTextBox.Text;
                 actions.Add(runTerminalCommandAction);
 
-                pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomDirectoryTextBox.Text;
+                SelectDirectoryAction selectDirectoryAction = new SelectDirectoryAction();
+                selectDirectoryAction.Path = Path.GetDirectoryName(pomLocationTextBox.Text);
+                actions.Add(selectDirectoryAction);
+
+                pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomLocationTextBox.Text;
                 pluginTaskInput.Context.Map["PieMavenPlugin:phases"] = phasesTextBox.Text;
+                pluginTaskInput.Context.Map["PieMavenPlugin:className"] = "org.example.Main";
 
                 this.Close();
             }
@@ -45,7 +54,15 @@ namespace PieMavenPlugin
         {
             if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:pomDirectory"))
             {
-                pomDirectoryTextBox.Text = (string)pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"];
+                pomLocationTextBox.Text = (string)pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"];
+                phasesTextBox.Text = "clean install";
+            }
+            else if (pluginTaskInput.OpenedDirectory != null &&
+                File.Exists(Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml")))
+            {
+                pomLocationTextBox.Text = Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml");
+                pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomLocationTextBox.Text;
+                phasesTextBox.Text = "clean install";
             }
 
             if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:phases"))

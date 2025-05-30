@@ -3,7 +3,7 @@ using plugin.Classes;
 
 namespace SampleWinformsPlugin
 {
-    public class Program: IPlugin
+    public class Program : IPlugin
     {
         public string GetName()
         {
@@ -15,7 +15,8 @@ namespace SampleWinformsPlugin
             return new Dictionary<PluginTask, Func<PluginTaskInput, PluginTaskOutput>>
             {
                 { new PluginTask("New Maven Project"), NewMavenProject },
-                {new PluginTask("Build Project"), BuildMavenProject }
+                {new PluginTask("Build Project"), BuildMavenProject },
+                {new PluginTask("Run Maven Project"), RunMavenProject }
             };
         }
 
@@ -43,6 +44,19 @@ namespace SampleWinformsPlugin
 
             List<PluginAction> actions = buildMavenProjectForm.actions;
             output.Actions = actions;
+
+            return output;
+        }
+
+        public PluginTaskOutput RunMavenProject(PluginTaskInput input)
+        {
+            PluginTaskOutput output = new PluginTaskOutput();
+
+            RunMavenProjectForm runMavenProjectForm = new RunMavenProjectForm();
+            runMavenProjectForm.pluginTaskInput = input;
+            runMavenProjectForm.ShowDialog();
+
+            output.Actions = runMavenProjectForm.actions;
 
             return output;
         }
