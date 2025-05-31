@@ -37,20 +37,29 @@ namespace PieMavenPlugin
 
         private void RunMavenProjectForm_Load(object sender, EventArgs e)
         {
-            if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:pomDirectory"))
+            // Was another folder opened?
+            if (!pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:openedDirectory") || !pluginTaskInput.OpenedDirectory.Equals(pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"]))
             {
-                pomLocationTextBox.Text = pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"].ToString();
-            }
-            else if (pluginTaskInput.OpenedDirectory != null &&
-               File.Exists(Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml")))
-            {
-                pomLocationTextBox.Text = Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml");
-                pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomLocationTextBox.Text;
-            }
+                pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"] = pluginTaskInput.OpenedDirectory;
 
-            if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:className"))
+                if (pluginTaskInput.OpenedDirectory != null &&
+                   File.Exists(Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml")))
+                {
+                    pomLocationTextBox.Text = Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml");
+                    pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomLocationTextBox.Text;
+                }
+            }
+            else
             {
-                classNameTextBox.Text = pluginTaskInput.Context.Map["PieMavenPlugin:className"].ToString();
+                if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:pomDirectory"))
+                {
+                    pomLocationTextBox.Text = pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"].ToString();
+                }
+
+                if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:className"))
+                {
+                    classNameTextBox.Text = pluginTaskInput.Context.Map["PieMavenPlugin:className"].ToString();
+                }
             }
         }
 

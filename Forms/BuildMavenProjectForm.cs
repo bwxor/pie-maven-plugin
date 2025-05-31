@@ -52,22 +52,27 @@ namespace PieMavenPlugin
 
         private void BuildMavenProjectForm_Load(object sender, EventArgs e)
         {
-            if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:pomDirectory"))
+            // Was another folder opened?
+            if (!string.IsNullOrEmpty(pluginTaskInput.OpenedDirectory) && (!pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:openedDirectory") || !pluginTaskInput.OpenedDirectory.Equals(pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"])))
             {
-                pomLocationTextBox.Text = (string)pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"];
-                phasesTextBox.Text = "clean install";
+                if (File.Exists(Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml"))) {
+                    pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"] = pluginTaskInput.OpenedDirectory;
+                    pomLocationTextBox.Text = Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml");
+                    pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomLocationTextBox.Text;
+                }
             }
-            else if (pluginTaskInput.OpenedDirectory != null &&
-                File.Exists(Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml")))
+            else if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:pomDirectory"))
             {
-                pomLocationTextBox.Text = Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml");
-                pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomLocationTextBox.Text;
-                phasesTextBox.Text = "clean install";
+                pomLocationTextBox.Text = pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"].ToString();
             }
 
             if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:phases"))
             {
                 phasesTextBox.Text = (string)pluginTaskInput.Context.Map["PieMavenPlugin:phases"];
+            }
+            else
+            {
+                phasesTextBox.Text = "clean install";
             }
         }
     }
