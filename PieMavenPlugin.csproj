@@ -9,6 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Templates\Main.java" />
+    <None Remove="Templates\MainTest.java" />
+    <None Remove="Templates\pom.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\Main.java" />
+    <EmbeddedResource Include="Templates\MainTest.java" />
+    <EmbeddedResource Include="Templates\pom-test.xml" />
+    <EmbeddedResource Include="Templates\pom.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="plugin">
       <HintPath>..\pie\plugin\bin\Debug\net8.0\plugin.dll</HintPath>
     </Reference>

@@ -12,11 +12,11 @@ using System.Windows.Forms;
 
 namespace PieMavenPlugin
 {
-    public partial class RunMavenProjectForm : Form
+    public partial class RunMavenClassForm : Form
     {
         public PluginTaskInput pluginTaskInput;
         public List<PluginAction> actions = new List<PluginAction>();
-        public RunMavenProjectForm()
+        public RunMavenClassForm()
         {
             InitializeComponent();
         }
@@ -38,7 +38,7 @@ namespace PieMavenPlugin
         private void RunMavenProjectForm_Load(object sender, EventArgs e)
         {
             // Was another folder opened?
-            if (!pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:openedDirectory") || !pluginTaskInput.OpenedDirectory.Equals(pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"]))
+            if (!pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:openedDirectory") && !string.IsNullOrEmpty(pluginTaskInput.OpenedDirectory) || !pluginTaskInput.OpenedDirectory.Equals(pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"]))
             {
                 pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"] = pluginTaskInput.OpenedDirectory;
 
@@ -55,11 +55,20 @@ namespace PieMavenPlugin
                 {
                     pomLocationTextBox.Text = pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"].ToString();
                 }
+            }
 
-                if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:className"))
-                {
-                    classNameTextBox.Text = pluginTaskInput.Context.Map["PieMavenPlugin:className"].ToString();
-                }
+            if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:className"))
+            {
+                classNameTextBox.Text = pluginTaskInput.Context.Map["PieMavenPlugin:className"].ToString();
+            }
+
+            if (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:classLocation"))
+            {
+                classLocationComboBox.SelectedIndex = (int)pluginTaskInput.Context.Map["PieMavenPlugin:classLocation"];
+            }
+            else
+            {
+                classLocationComboBox.SelectedIndex = 0; // Default to first option
             }
         }
 
@@ -69,14 +78,29 @@ namespace PieMavenPlugin
 
             string pomLocation = pomLocationTextBox.Text.Trim();
             string outputFileLocation = Path.Combine(Path.GetDirectoryName(pomLocation), "classpath");
-            string targetClassesLocation = Path.Combine(Path.GetDirectoryName(pomLocation), "target", "classes");
+            string targetClassesLocation = Path.Combine(Path.GetDirectoryName(pomLocation), "target", classLocationComboBox.SelectedIndex == 0 ? "classes" : "test-clas");
 
-            RunTerminalCommandAction runTerminalCommandAction = new RunTerminalCommandAction
+            RunTerminalCommandAction runTerminalCommandAction;
+
+            if (classLocationComboBox.SelectedIndex == 0)
             {
-                Command = $"java -cp \"" + targetClassesLocation + ";$(mvn -q dependency:build-classpath)\" " + classNameTextBox.Text
-            };
+                runTerminalCommandAction = new RunTerminalCommandAction
+                {
+                    Command = $"java -cp \"" + targetClassesLocation + ";$(mvn -q dependency:build-classpath)\" " + classNameTextBox.Text
+                };
+            }
+            else
+            {
+                runTerminalCommandAction = new RunTerminalCommandAction
+                {
+                    Command = $"mvn -f " + pomLocationTextBox.Text + " test -Dtest=" + classNameTextBox.Text
+                };
+            }
 
             actions.Add(runTerminalCommandAction);
+
+            pluginTaskInput.Context.Map["PieMavenPlugin:className"] = classNameTextBox.Text;
+            pluginTaskInput.Context.Map["PieMavenPlugin:classLocation"] = classLocationComboBox.SelectedIndex;
 
             this.Close();
         }

@@ -1,7 +1,7 @@
 using PieMavenPlugin;
 using plugin.Classes;
 
-namespace SampleWinformsPlugin
+namespace PieMavenPlugin
 {
     public class Program : IPlugin
     {
@@ -16,7 +16,7 @@ namespace SampleWinformsPlugin
             {
                 { new PluginTask("New Maven Project"), NewMavenProject },
                 {new PluginTask("Build Project"), BuildMavenProject },
-                {new PluginTask("Run Maven Project"), RunMavenProject }
+                {new PluginTask("Run Maven Class"), RunMavenClass }
             };
         }
 
@@ -48,15 +48,15 @@ namespace SampleWinformsPlugin
             return output;
         }
 
-        public PluginTaskOutput RunMavenProject(PluginTaskInput input)
+        public PluginTaskOutput RunMavenClass(PluginTaskInput input)
         {
             PluginTaskOutput output = new PluginTaskOutput();
 
-            RunMavenProjectForm runMavenProjectForm = new RunMavenProjectForm();
-            runMavenProjectForm.pluginTaskInput = input;
-            runMavenProjectForm.ShowDialog();
+            RunMavenClassForm runMavenClassForm = new RunMavenClassForm();
+            runMavenClassForm.pluginTaskInput = input;
+            runMavenClassForm.ShowDialog();
 
-            output.Actions = runMavenProjectForm.actions;
+            output.Actions = runMavenClassForm.actions;
 
             return output;
         }

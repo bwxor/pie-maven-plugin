@@ -1,12 +1,13 @@
-using PieMavenPlugin.Classes;
 using plugin.Classes;
+using System.Reflection;
 
-namespace SampleWinformsPlugin
+namespace PieMavenPlugin
 {
     public partial class NewMavenProjectForm : Form
     {
         public PluginTaskInput pluginTaskInput;
         public List<PluginAction> actions = new List<PluginAction>();
+        private bool includeTestingFramework;
 
         public NewMavenProjectForm()
         {
@@ -77,10 +78,25 @@ namespace SampleWinformsPlugin
             CreateDirectoryFromParent(artifactId + "\\src\\test\\resources");
 
             BuildJavaMainClassFromParent();
-            CreatePomFileFromParent();
+
+            if (includeTestingFramework)
+            {
+                BuildJavaTestClassFromParent();
+            }
+
+            if (includeTestingFramework)
+            {
+                CreateTestPomFileFromParent();
+            }
+            else
+            {
+                CreatePomFileFromParent();
+            }
+
             SelectProjectDirectoryFromParent();
 
             pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = parentDirectoryTextBox.Text + "\\" + artifactId + "\\pom.xml";
+            pluginTaskInput.Context.Map["PieMavenPlugin:className"] = groupIdTextBox.Text + ".Main";
         }
 
         private void CreateDirectoryFromParent(string name)
@@ -103,13 +119,36 @@ namespace SampleWinformsPlugin
                 CreateDirectoryFromParent(javaPackagePath);
             }
 
-            CreateFileFromParent(javaPackagePath + "\\Main.java", "package " + groupIdTextBox.Text + ";\n\n" + FileContents.JAVA_MAIN_CLASS_CONTENT);
+            CreateFileFromParent(javaPackagePath + "\\Main.java", "package " + groupIdTextBox.Text + ";\n\n" + ResourceReader.ReadResource("PieMavenPlugin.Templates.Main.java"));
             OpenTabFromParent(javaPackagePath + "\\Main.java");
+        }
+
+        private void BuildJavaTestClassFromParent()
+        {
+            string[] groupIdSplitByDot = groupIdTextBox.Text.Split('.');
+
+            string javaPackagePath = artifactIdTextBox.Text + "\\src\\test\\java";
+
+            for (int i = 0; i < groupIdSplitByDot.Length; i++)
+            {
+                javaPackagePath += "\\" + groupIdSplitByDot[i];
+
+                CreateDirectoryFromParent(javaPackagePath);
+            }
+
+            CreateFileFromParent(javaPackagePath + "\\MainTest.java", "package " + groupIdTextBox.Text + ";\n\n" + ResourceReader.ReadResource("PieMavenPlugin.Templates.MainTest.java"));
         }
 
         private void CreatePomFileFromParent()
         {
-            CreateFileFromParent(artifactIdTextBox.Text + "\\pom.xml", FileContents.POM_CONTENT.Replace("REPLACE_GROUP_ID", groupIdTextBox.Text).Replace("REPLACE_ARTIFACT_ID", artifactIdTextBox.Text).Replace("REPLACE_VERSION", versionTextBox.Text));
+            string pom = ResourceReader.ReadResource("PieMavenPlugin.Templates.pom.xml");
+            CreateFileFromParent(artifactIdTextBox.Text + "\\pom.xml", pom.Replace("REPLACE_GROUP_ID", groupIdTextBox.Text).Replace("REPLACE_ARTIFACT_ID", artifactIdTextBox.Text).Replace("REPLACE_VERSION", versionTextBox.Text));
+        }
+
+        private void CreateTestPomFileFromParent()
+        {
+            string pom = ResourceReader.ReadResource("PieMavenPlugin.Templates.pom-test.xml");
+            CreateFileFromParent(artifactIdTextBox.Text + "\\pom.xml", pom.Replace("REPLACE_GROUP_ID", groupIdTextBox.Text).Replace("REPLACE_ARTIFACT_ID", artifactIdTextBox.Text).Replace("REPLACE_VERSION", versionTextBox.Text));
         }
 
         private void CreateFileFromParent(string name, string content)
@@ -132,6 +171,11 @@ namespace SampleWinformsPlugin
             SelectDirectoryAction selectDirectoryAction = new SelectDirectoryAction();
             selectDirectoryAction.Path = parentDirectoryTextBox.Text + "\\" + artifactIdTextBox.Text;
             actions.Add(selectDirectoryAction);
+        }
+
+        private void includeTestFrameworkCheckbox_CheckStateChanged(object sender, EventArgs e)
+        {
+            includeTestingFramework = ((CheckBox)sender).Checked;
         }
     }
 }

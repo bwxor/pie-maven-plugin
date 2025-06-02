@@ -1,4 +1,4 @@
-﻿namespace SampleWinformsPlugin
+﻿namespace PieMavenPlugin
 {
     partial class NewMavenProjectForm
     {
@@ -39,6 +39,7 @@
             label3 = new Label();
             versionTextBox = new TextBox();
             label4 = new Label();
+            includeTestFrameworkCheckbox = new CheckBox();
             SuspendLayout();
             // 
             // parentDirectoryTextBox
@@ -71,7 +72,7 @@
             // 
             // generateButton
             // 
-            generateButton.Location = new Point(332, 212);
+            generateButton.Location = new Point(332, 225);
             generateButton.Name = "generateButton";
             generateButton.Size = new Size(75, 23);
             generateButton.TabIndex = 3;
@@ -133,12 +134,24 @@
             label4.TabIndex = 8;
             label4.Text = "Version:";
             // 
+            // includeTestFrameworkCheckbox
+            // 
+            includeTestFrameworkCheckbox.AutoSize = true;
+            includeTestFrameworkCheckbox.Location = new Point(12, 196);
+            includeTestFrameworkCheckbox.Name = "includeTestFrameworkCheckbox";
+            includeTestFrameworkCheckbox.Size = new Size(164, 19);
+            includeTestFrameworkCheckbox.TabIndex = 10;
+            includeTestFrameworkCheckbox.Text = "Include testing framework";
+            includeTestFrameworkCheckbox.UseVisualStyleBackColor = true;
+            includeTestFrameworkCheckbox.CheckStateChanged += includeTestFrameworkCheckbox_CheckStateChanged;
+            // 
             // NewMavenProjectForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Control;
-            ClientSize = new Size(419, 247);
+            ClientSize = new Size(419, 258);
+            Controls.Add(includeTestFrameworkCheckbox);
             Controls.Add(versionTextBox);
             Controls.Add(label4);
             Controls.Add(artifactIdTextBox);
@@ -171,5 +184,6 @@
         private Label label3;
         private TextBox versionTextBox;
         private Label label4;
+        private CheckBox includeTestFrameworkCheckbox;
     }
 }

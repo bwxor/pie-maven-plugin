@@ -44,7 +44,6 @@ namespace PieMavenPlugin
 
                 pluginTaskInput.Context.Map["PieMavenPlugin:pomDirectory"] = pomLocationTextBox.Text;
                 pluginTaskInput.Context.Map["PieMavenPlugin:phases"] = phasesTextBox.Text;
-                pluginTaskInput.Context.Map["PieMavenPlugin:className"] = "org.example.Main";
 
                 this.Close();
             }

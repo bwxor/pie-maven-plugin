@@ -1,6 +1,6 @@
 ﻿namespace PieMavenPlugin
 {
-    partial class RunMavenProjectForm
+    partial class RunMavenClassForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,18 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RunMavenProjectForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RunMavenClassForm));
             generateButton = new Button();
             label1 = new Label();
             browseButton = new Button();
             pomLocationTextBox = new TextBox();
             label2 = new Label();
             classNameTextBox = new TextBox();
+            classLocationComboBox = new ComboBox();
+            label3 = new Label();
             SuspendLayout();
             // 
             // generateButton
             // 
-            generateButton.Location = new Point(335, 124);
+            generateButton.Location = new Point(335, 167);
             generateButton.Name = "generateButton";
             generateButton.Size = new Size(75, 23);
             generateButton.TabIndex = 7;
@@ -92,11 +94,32 @@
             classNameTextBox.Size = new Size(395, 23);
             classNameTextBox.TabIndex = 8;
             // 
+            // classLocationComboBox
+            // 
+            classLocationComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            classLocationComboBox.FormattingEnabled = true;
+            classLocationComboBox.Items.AddRange(new object[] { "src/main", "src/test" });
+            classLocationComboBox.Location = new Point(15, 129);
+            classLocationComboBox.Name = "classLocationComboBox";
+            classLocationComboBox.Size = new Size(195, 23);
+            classLocationComboBox.TabIndex = 10;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(12, 111);
+            label3.Name = "label3";
+            label3.Size = new Size(86, 15);
+            label3.TabIndex = 11;
+            label3.Text = "Class Location:";
+            // 
             // RunMavenProjectForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(422, 155);
+            ClientSize = new Size(422, 198);
+            Controls.Add(label3);
+            Controls.Add(classLocationComboBox);
             Controls.Add(label2);
             Controls.Add(classNameTextBox);
             Controls.Add(generateButton);
@@ -108,7 +131,7 @@
             MaximizeBox = false;
             Name = "RunMavenProjectForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Run Maven Project";
+            Text = "Run Maven Class";
             Load += RunMavenProjectForm_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -122,5 +145,7 @@
         private TextBox pomLocationTextBox;
         private Label label2;
         private TextBox classNameTextBox;
+        private ComboBox classLocationComboBox;
+        private Label label3;
     }
 }
