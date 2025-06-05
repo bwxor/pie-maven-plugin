@@ -38,9 +38,9 @@ namespace PieMavenPlugin
         private void RunMavenProjectForm_Load(object sender, EventArgs e)
         {
             // Was another folder opened?
-            if (!pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:openedDirectory") && !string.IsNullOrEmpty(pluginTaskInput.OpenedDirectory) || !pluginTaskInput.OpenedDirectory.Equals(pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"]))
+            if (!pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin:openedDirectory") && !string.IsNullOrEmpty(pluginTaskInput.OpenedDirectory) ||  (pluginTaskInput.Context.Map.ContainsKey("PieMavenPlugin.openedDirectory") && !pluginTaskInput.OpenedDirectory.Equals(pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"])))
             {
-                pluginTaskInput.Context.Map["PieMavenPlugin:openedDirectory"] = pluginTaskInput.OpenedDirectory;
+                pluginTaskInput.Context.Map.Add("PieMavenPlugin:openedDirectory", pluginTaskInput.OpenedDirectory);
 
                 if (pluginTaskInput.OpenedDirectory != null &&
                    File.Exists(Path.Combine(pluginTaskInput.OpenedDirectory, "pom.xml")))
