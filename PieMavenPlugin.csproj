@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <Reference Include="plugin">
-      <HintPath>..\pie\plugin\bin\Debug\net8.0\plugin.dll</HintPath>
+      <HintPath>..\pie\plugin\bin\Release\net8.0\plugin.dll</HintPath>
     </Reference>
   </ItemGroup>
 
