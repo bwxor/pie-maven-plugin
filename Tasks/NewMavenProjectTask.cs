@@ -156,7 +156,7 @@ namespace PieMavenPlugin.Windows
         private CreateFileAction CreatePomFileFromParent()
         {
             string pom = ResourceReader.ReadResource("PieMavenPlugin.Templates.pom.xml");
-            return new CreateFileAction("${controls.artifactIdTextBox}" + "\\pom.xml", pom.Replace("REPLACE_GROUP_ID", "${controls.groupIdTextBox}").Replace("REPLACE_ARTIFACT_ID", "${controls.artifactIdTextBox}").Replace("REPLACE_VERSION", "${controls.versionTextBox}"));
+            return new CreateFileAction("${controls.folderBrowser}" + "\\" + "${controls.artifactIdTextBox}" + "\\pom.xml", pom.Replace("REPLACE_GROUP_ID", "${controls.groupIdTextBox}").Replace("REPLACE_ARTIFACT_ID", "${controls.artifactIdTextBox}").Replace("REPLACE_VERSION", "${controls.versionTextBox}"));
         }
 
         private CreateFileAction CreateTestPomFileFromParent()
