@@ -1,6 +1,7 @@
 ﻿
 using PieMavenPlugin.Tasks;
 using plugin.Classes.Actions;
+using plugin.Classes.Actions.OnInvokeTask;
 using plugin.Classes.Context;
 using plugin.Classes.UI.Containers;
 
@@ -40,16 +41,16 @@ namespace PieMavenPlugin.Windows
             return window;
         }
 
-        public List<UIAction> OnOpenActions(PluginContext context)
+        public List<OnWindowOpenAction> OnOpenActions(PluginContext context)
         {
-            List<UIAction> onOpenActions = new List<UIAction>();
+            List<OnWindowOpenAction> onOpenActions = new List<OnWindowOpenAction>();
 
             return onOpenActions;
         }
 
-        public List<ExitAction> OnCloseActions(PluginContext context)
+        public List<OnWindowCloseAction> OnCloseActions(PluginContext context)
         {
-            List<ExitAction> onCloseActions = new List<ExitAction>();
+            List<OnWindowCloseAction> onCloseActions = new List<OnWindowCloseAction>();
 
             onCloseActions.Add(new ValidationAction("folderBrowser", s => string.IsNullOrEmpty(s.Trim()), "Input fields cannot be empty."));
             onCloseActions.Add(new ValidationAction("groupIdTextBox", s => string.IsNullOrEmpty(s.Trim()), "Input fields cannot be empty."));
@@ -68,9 +69,9 @@ namespace PieMavenPlugin.Windows
             onCloseActions.Add(new StoreInContextAction("pie-maven-plugin/pomDirectory", "${controls.folderBrowser}\\${controls.artifactIdTextBox}"));
             onCloseActions.Add(new StoreInContextAction("pie-maven-plugin/className", "${controls.groupIdTextBox}.Main"));
 
-            List<ExitAction> actionsToAdd = CreateMavenStructure();
+            List<OnWindowCloseAction> actionsToAdd = CreateMavenStructure();
 
-            foreach (ExitAction action in actionsToAdd)
+            foreach (OnWindowCloseAction action in actionsToAdd)
             {
                 onCloseActions.Add(action);
             }
@@ -78,9 +79,9 @@ namespace PieMavenPlugin.Windows
             return onCloseActions;
         }
 
-        private List<ExitAction> CreateMavenStructure()
+        private List<OnWindowCloseAction> CreateMavenStructure()
         {
-            List<ExitAction> actions = new List<ExitAction>();
+            List<OnWindowCloseAction> actions = new List<OnWindowCloseAction>();
 
             actions.Add(CreateDirectoryFromParent("${controls.artifactIdTextBox}"));
             actions.Add(CreateDirectoryFromParent("${controls.artifactIdTextBox}" + "\\src"));
@@ -94,23 +95,31 @@ namespace PieMavenPlugin.Windows
             actions.Add(BuildJavaMainClassFromParent());
 
             actions.Add(new GeneratorAction(
-                new string[] { "${controls.includeTestingFrameworkCheckButton}" },
+                new string[] { "${controls.includeTestingFrameworkCheckButton}", "${controls.groupIdTextBox}", "${controls.artifactIdTextBox}" },
                 (s) =>
                 {
-                    List<ExitAction> actions = new List<ExitAction>();
+                    List<OnWindowCloseAction> actions = new List<OnWindowCloseAction>();
 
                     if (s[0] == "true")
                     {
-                        actions.Add(BuildJavaTestClassFromParent());
-                        actions.Add(CreateTestPomFileFromParent());
+                        string javaPackagePath = s[2] + "\\src\\test\\java";
+                        string[] groupIdSplitByDot = s[1].Split('.');
 
+                        for (int i = 0; i < groupIdSplitByDot.Length; i++)
+                        {
+                            javaPackagePath += "\\" + groupIdSplitByDot[i];
+                            actions.Add(CreateDirectoryFromParent(javaPackagePath));
+                        }
+
+                        actions.Add(CreateFileFromParent(javaPackagePath + "\\MainTest.java", "package " + s[1] + ";\n\n" + ResourceReader.ReadResource("PieMavenPlugin.Templates.MainTest.java")));
+                        actions.Add(CreateTestPomFileFromParent());
                     }
                     else
                     {
-                        actions.Add(SelectProjectDirectoryFromParent());
+                        actions.Add(CreatePomFileFromParent());
                     }
 
-                    return actions;
+                        return actions;
                 }));
 
             actions.Add(SelectProjectDirectoryFromParent());
@@ -130,7 +139,7 @@ namespace PieMavenPlugin.Windows
                 string javaPackagePath = s[1] + "\\src\\main\\java";
                 string[] groupIdSplitByDot = s[0].Split('.');
 
-                List<ExitAction> actions = new List<ExitAction>();
+                List<OnWindowCloseAction> actions = new List<OnWindowCloseAction>();
                 for (int i = 0; i < groupIdSplitByDot.Length; i++)
                 {
                     javaPackagePath += "\\" + groupIdSplitByDot[i];
@@ -139,26 +148,6 @@ namespace PieMavenPlugin.Windows
 
                 actions.Add(CreateFileFromParent(javaPackagePath + "\\Main.java", "package " + s[0] + ";\n\n" + ResourceReader.ReadResource("PieMavenPlugin.Templates.Main.java")));
                 actions.Add(OpenTabFromParent(javaPackagePath + "\\Main.java"));
-
-                return actions;
-            });
-        }
-
-        private GeneratorAction BuildJavaTestClassFromParent()
-        {
-            return new GeneratorAction(new string[] { "${controls.groupIdTextBox}", "${controls.artifactIdTextBox}" }, (s) =>
-            {
-                string javaPackagePath = s[1] + "\\src\\test\\java";
-                string[] groupIdSplitByDot = s[0].Split('.');
-
-                List<ExitAction> actions = new List<ExitAction>();
-                for (int i = 0; i < groupIdSplitByDot.Length; i++)
-                {
-                    javaPackagePath += "\\" + groupIdSplitByDot[i];
-                    actions.Add(CreateDirectoryFromParent(javaPackagePath));
-                }
-
-                actions.Add(CreateFileFromParent(javaPackagePath + "\\MainTest.java", "package " + s[0] + ";\n\n" + ResourceReader.ReadResource("PieMavenPlugin.Templates.MainTest.java")));
 
                 return actions;
             });

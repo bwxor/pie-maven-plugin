@@ -1,6 +1,7 @@
 ﻿
 using PieMavenPlugin.Tasks;
 using plugin.Classes.Actions;
+using plugin.Classes.Actions.OnInvokeTask;
 using plugin.Classes.Context;
 using plugin.Classes.UI.Containers;
 using System.Net.Http.Headers;
@@ -28,16 +29,16 @@ namespace PieMavenPlugin.Windows
             return window;
         }
 
-        public List<UIAction> OnOpenActions(PluginContext context)
+        public List<OnWindowOpenAction> OnOpenActions(PluginContext context)
         {
-            List<UIAction> onOpenActions = new List<UIAction>();
+            List<OnWindowOpenAction> onOpenActions = new List<OnWindowOpenAction>();
 
             return onOpenActions;
         }
 
-        public List<ExitAction> OnCloseActions(PluginContext context)
+        public List<OnWindowCloseAction> OnCloseActions(PluginContext context)
         {
-            List<ExitAction> onCloseActions = new List<ExitAction>();
+            List<OnWindowCloseAction> onCloseActions = new List<OnWindowCloseAction>();
 
             onCloseActions.Add(new ValidationAction("fileBrowser", s => string.IsNullOrEmpty(s.Trim()), "Input fields cannot be empty."));
 
@@ -47,7 +48,7 @@ namespace PieMavenPlugin.Windows
                 new string[] { "${controls.fileBrowser}" },
                 s =>
                 {
-                    List<ExitAction> actions = new List<ExitAction>();
+                    List<OnWindowCloseAction> actions = new List<OnWindowCloseAction>();
                     actions.Add(new SelectDirectoryAction(s[0].Substring(0, s[0].LastIndexOf("\\"))));
                     return actions;
                 }

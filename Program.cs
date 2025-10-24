@@ -1,10 +1,9 @@
-using PieMavenPlugin;
+using PieMavenPlugin.Listeners;
 using PieMavenPlugin.Windows;
 using plugin.Classes;
-using plugin.Classes.Actions;
+using plugin.Classes.Actions.Window;
 using plugin.Classes.Context;
 using plugin.Classes.UI.Containers;
-using System.ComponentModel;
 
 namespace PieMavenPlugin
 {
@@ -39,6 +38,16 @@ namespace PieMavenPlugin
             }
 
             return null;
+        }
+
+        public List<OnCreateFileAction> OnCreateFile(string fullFilePath, PluginContext context)
+        {
+            return new OnCreateFileListener().onCreateFile(fullFilePath, context);
+        }
+
+        public List<OnOpenDirectoryAction> OnOpenDirectory(string directoryPath, PluginContext context)
+        {
+            return new OnOpenDirectoryListener().onOpenDirectory(directoryPath, context);
         }
     }
 }
