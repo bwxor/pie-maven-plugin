@@ -16,7 +16,7 @@ namespace PieMavenPlugin.Windows
             window.Controls.Add(new plugin.Classes.UI.Decoration.Label("pomLocationLabel", "POM Location:"));
             window.Controls.Add(
                 new plugin.Classes.UI.Composite.FileBrowser("fileBrowser", "Maven Project Files (*.xml)|*.xml|All Files (*.*)|*.*", context.Custom.ContainsKey("pie-maven-plugin/pomDirectory") ?
-                context.Custom["pie-maven-plugin/pomDirectory"] + "\\pom.xml" : "")
+                context.Custom["pie-maven-plugin/pomLocation"] : "")
             );
             window.Controls.Add(new plugin.Classes.UI.Decoration.SpaceDelimiter());
 
@@ -54,7 +54,7 @@ namespace PieMavenPlugin.Windows
                 }
                 ));
 
-            onCloseActions.Add(new StoreInContextAction("pie-maven-plugin/pomDirectory", "${controls.fileBrowser}"));
+            onCloseActions.Add(new StoreInContextAction("pie-maven-plugin/pomLocation", "${controls.fileBrowser}"));
             onCloseActions.Add(new StoreInContextAction("pie-maven-plugin/phases", "${controls.phasesTextBox}"));
 
             return onCloseActions;

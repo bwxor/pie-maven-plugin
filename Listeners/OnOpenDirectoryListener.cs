@@ -33,6 +33,7 @@ namespace PieMavenPlugin.Listeners
                         actions.Add(new StoreInContextAction("pie-maven-plugin/groupId", groupId));
                         actions.Add(new StoreInContextAction("pie-maven-plugin/artifactId", artifactId));
                         actions.Add(new StoreInContextAction("pie-maven-plugin/pomDirectory", directoryPath));
+                        actions.Add(new StoreInContextAction("pie-maven-plugin/pomLocation", directoryPath + "\\pom.xml"));
                         actions.Add(new StoreInContextAction("pie-maven-plugin/className", groupId + ".Main"));
                         return actions;
                     }
@@ -43,6 +44,7 @@ namespace PieMavenPlugin.Listeners
             actions.Add(new StoreInContextAction("pie-maven-plugin/groupId", null));
             actions.Add(new StoreInContextAction("pie-maven-plugin/artifactId", null));
             actions.Add(new StoreInContextAction("pie-maven-plugin/pomDirectory", null));
+            actions.Add(new StoreInContextAction("pie-maven-plugin/pomLocation", null));
             actions.Add(new StoreInContextAction("pie-maven-plugin/className", null));
             return actions;
         }
